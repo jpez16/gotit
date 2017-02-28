@@ -187,6 +187,8 @@ class Book(db.Model):
         data = json.loads(request.data.decode('utf-8'))
         user = User.get_by_token(request.args.get('token'))
         book = Book.get_by_isbn(data['isbn'])
+        if not book:
+            return "Not found", 404
         rl = ReadingList.get_by_id(book.rl_id)
         if user:
             if rl not in user.readingLists and rl.private:
