@@ -114,7 +114,7 @@ class ReadingList(db.Model):
 
 class Book(db.Model):
     __tablename__ = "book"
-    isbn = db.Column(db.Integer, primary_key=True)
+    isbn = db.Column(db.BigInteger, primary_key=True)
     rl_id = db.Column(db.String(100), db.ForeignKey('readinglist.id'))
     title = db.Column(db.String(160))
     author = db.Column(db.String(80))
@@ -241,11 +241,15 @@ class Book(db.Model):
     def add_book_to_reading_list():
         data = json.loads(request.data.decode('utf-8'))
         user = User.get_by_token(request.args.get('token'))
-        book = Book(**data)
+        book = Book.get_by_isbn(data['isbn'])
+        if book:
+            return "Book already exists", 400
+
         rl = ReadingList.get_by_id(data['id'])
         if rl not in user.readingLists:
             return "Reading list not found", 404
         rl = ReadingList.get_by_id(data['id'])
+        book = Book(**data)
         rl.books.append(book)
         commit_db()
         return Response(response=json.dumps({'isbn': book.isbn}), status=200)
