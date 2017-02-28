@@ -144,7 +144,7 @@ class Book(db.Model):
     def get_by_isbn(cls, isbn):
         return cls.query.filter(cls.isbn == isbn).first()
 
-    # ROUTES ---------------------------------------------------------------------------------------------------------------
+# ROUTES ---------------------------------------------------------------------------------------------------------------
 
     @app.route('/create-account', methods=['POST'])
     def create_account_email():
