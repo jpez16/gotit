@@ -259,12 +259,15 @@ class Book(db.Model):
     def remove_book_from_reading_list():
         data = json.loads(request.data.decode('utf-8'))
         user = User.get_by_token(request.args.get('token'))
-        book = Book.get_by_isbn(data['book_isbn'])
+        book = Book.get_by_isbn(data['isbn'])
+        if not book:
+            return "Book not found", 404
         rl = ReadingList.get_by_id(data['id'])
         if rl not in user.readingLists:
             return "Reading list not found", 404
         rl = ReadingList.get_by_id(data['id'])
         rl.books.remove(book)
+        db.session.delete(book)
         commit_db()
         return "Book removed from reading list", 200
 
